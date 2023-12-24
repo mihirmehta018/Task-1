@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Parser</title>
+</head>
+<body>
+
+<div id="productList"></div>
+
+<script>
+    // Function to fetch JSON data from the provided URL
+    async function fetchData(url) {
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    // Function to display the data in descending order of popularity
+    function displayData(data) {
+        // Convert the data object into an array
+        const dataArray = Object.values(data.products);
+
+        // Check if the data is an array
+        if (Array.isArray(dataArray)) {
+            // Sort the data by popularity in descending order
+            const sortedData = dataArray.sort((a, b) => b.popularity - a.popularity);
+
+            console.log(sortedData);
+
+            // Create a string to display the sorted data
+            const displayString = sortedData.map(products => {
+                return `<div>
+                            <p><strong>Title:</strong> ${products.title}</p>
+                            <p><strong>Subcategory:</strong> ${products.subcategory}</p>
+                            <p><strong>Price:</strong> ${products.price}</p>
+                            <p><strong>Popularity:</strong> ${products.popularity}</p>
+                            <hr>
+                        </div>`;
+            }).join('');
+
+            // Display the data in the productList div
+            document.getElementById('productList').innerHTML = displayString;
+        } else {
+            console.error('Invalid data format. Expected an array.');
+        }
+    }
+
+    // URL of the JSON file
+    const jsonURL = 'https://s3.amazonaws.com/open-to-cors/assignment.json';
+
+    // Fetch data and display it
+    fetchData(jsonURL)
+        .then(data => {
+            // Check if data is available
+            if (data) {
+                console.log(data);
+                displayData(data);
+            } else {
+                console.error('No data found.');
+            }
+        });
+</script>
+
+</body>
+</html>
